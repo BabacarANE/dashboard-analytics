@@ -5,7 +5,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/metrics/'
+const isProd = import.meta.env.PROD
+const WS_URL = import.meta.env.VITE_WS_URL
+    || (isProd
+        ? 'wss://dashboard-analytics-backend-o0nq.onrender.com/ws/metrics/'
+        : 'ws://localhost:8000/ws/metrics/')
 
 export const WS_STATUS = {
   CONNECTING:  'connecting',
