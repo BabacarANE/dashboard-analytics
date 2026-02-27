@@ -1,79 +1,73 @@
-/**
- * components/ui/MetricCard.jsx
- */
+import { useEffect, useRef, useState } from 'react'
 
-import { useEffect, useState } from 'react'
-
-function TrendIcon({ change }) {
-  if (change > 0) return (
-    <svg className="w-3 h-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-    </svg>
-  )
-  if (change < 0) return (
-    <svg className="w-3 h-3 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-    </svg>
-  )
-  return <span className="w-3 h-3 text-gray-500">—</span>
+const COLOR_MAP = {
+  cyan:   { accent: '#00e5ff', glow: 'rgba(0,229,255,0.15)',  border: 'rgba(0,229,255,0.2)'  },
+  green:  { accent: '#00ff9d', glow: 'rgba(0,255,157,0.15)',  border: 'rgba(0,255,157,0.2)'  },
+  amber:  { accent: '#ffb800', glow: 'rgba(255,184,0,0.15)',  border: 'rgba(255,184,0,0.2)'  },
+  red:    { accent: '#ff4466', glow: 'rgba(255,68,102,0.15)', border: 'rgba(255,68,102,0.2)' },
 }
 
-export default function MetricCard({ label, value, change, unit = '', icon, color = 'blue' }) {
+export default function MetricCard({ label, value, change, unit = '', icon, color = 'cyan', className = '' }) {
   const [flash, setFlash] = useState(false)
+  const prevValue = useRef(value)
 
-  // Animation flash quand la valeur change
   useEffect(() => {
-    if (value === 0) return
-    setFlash(true)
-    const t = setTimeout(() => setFlash(false), 600)
-    return () => clearTimeout(t)
+    if (value !== prevValue.current && value !== 0) {
+      setFlash(true)
+      const t = setTimeout(() => setFlash(false), 500)
+      prevValue.current = value
+      return () => clearTimeout(t)
+    }
   }, [value])
 
-  const isPositive = change > 0
-  const isNegative = change < 0
-
-  const colorMap = {
-    blue:   { border: 'border-blue-500/30',   glow: 'shadow-blue-500/10',   icon: 'bg-blue-500/10 text-blue-400'   },
-    green:  { border: 'border-emerald-500/30', glow: 'shadow-emerald-500/10',icon: 'bg-emerald-500/10 text-emerald-400'},
-    purple: { border: 'border-violet-500/30',  glow: 'shadow-violet-500/10', icon: 'bg-violet-500/10 text-violet-400'},
-    orange: { border: 'border-orange-500/30',  glow: 'shadow-orange-500/10', icon: 'bg-orange-500/10 text-orange-400'},
-  }
-  const c = colorMap[color] ?? colorMap.blue
+  const c = COLOR_MAP[color] ?? COLOR_MAP.cyan
+  const isUp   = change > 0
+  const isDown = change < 0
 
   return (
-    <div className={`
-      relative bg-gray-900 border rounded-xl p-5
-      shadow-lg ${c.glow} ${c.border}
-      transition-all duration-300
-      ${flash ? 'brightness-110' : ''}
-    `}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">{label}</span>
-        {icon && (
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${c.icon}`}>
-            {icon}
-          </div>
-        )}
-      </div>
+      <div
+          className={`relative rounded-xl p-5 transition-all duration-300 ${className}`}
+          style={{
+            background:  '#0d1117',
+            border:      `1px solid ${flash ? c.accent : c.border}`,
+            boxShadow:   flash ? `0 0 24px ${c.glow}, inset 0 0 24px ${c.glow}` : `0 0 0px transparent`,
+          }}
+      >
+        {/* Top row */}
+        <div className="flex items-start justify-between mb-3">
+        <span className="text-xs font-mono uppercase tracking-widest" style={{ color: '#4b5563' }}>
+          {label}
+        </span>
+          {icon && (
+              <span className="text-sm" style={{ color: c.accent }}>{icon}</span>
+          )}
+        </div>
 
-      {/* Valeur principale */}
-      <div className={`text-3xl font-bold font-mono text-white tabular-nums transition-all duration-300 ${flash ? 'text-blue-200' : ''}`}>
-        {typeof value === 'number' ? value.toLocaleString('fr-FR') : value}
-        {unit && <span className="text-lg text-gray-500 ml-1">{unit}</span>}
-      </div>
+        {/* Value */}
+        <div
+            className="text-3xl font-display font-bold tabular-nums transition-all duration-200"
+            style={{ color: flash ? c.accent : '#e6edf3' }}
+        >
+          {typeof value === 'number' ? value.toLocaleString('fr-FR') : value}
+          {unit && <span className="text-base ml-1" style={{ color: '#4b5563' }}>{unit}</span>}
+        </div>
 
-      {/* Variation */}
-      <div className={`flex items-center gap-1 mt-2 text-xs font-mono ${
-        isPositive ? 'text-emerald-400' : isNegative ? 'text-red-400' : 'text-gray-500'
-      }`}>
-        <TrendIcon change={change} />
-        <span>
+        {/* Change */}
+        <div className="flex items-center gap-1.5 mt-2">
+        <span className="text-xs font-mono" style={{ color: isUp ? '#00ff9d' : isDown ? '#ff4466' : '#4b5563' }}>
+          {isUp ? '▲' : isDown ? '▼' : '─'}
+          {' '}
           {change > 0 ? '+' : ''}{typeof change === 'number' ? change.toFixed(1) : change}
           {unit && ` ${unit}`}
         </span>
-        <span className="text-gray-600 ml-1">vs dernier</span>
+          <span className="text-xs font-mono" style={{ color: '#2d3748' }}>/ dernier</span>
+        </div>
+
+        {/* Bottom accent line */}
+        <div
+            className="absolute bottom-0 left-4 right-4 h-px rounded-full transition-all duration-300"
+            style={{ background: flash ? c.accent : `linear-gradient(90deg, transparent, ${c.border}, transparent)` }}
+        />
       </div>
-    </div>
   )
 }
