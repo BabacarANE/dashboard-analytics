@@ -52,8 +52,17 @@ CHANNEL_LAYERS = {
 # ─────────────────────────────────────────────
 # CORS — Frontend sur Vercel
 # ─────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',')
+# core/settings_prod.py
+
+CORS_ALLOWED_ORIGINS = [
+    'https://dashboard-analytics-1kgzuy44u-babacaranes-projects.vercel.app',  # URL exacte de votre frontend
+    'https://dashboard-analytics.vercel.app',  # URL finale probable
+]
+
 CORS_ALLOW_CREDENTIALS = True
+
+# Important pour les WebSockets
+CORS_ALLOW_ALL_ORIGINS = False  # Ne pas mettre True en production
 
 # ─────────────────────────────────────────────
 # SECURITY — Recommandations pour la production
