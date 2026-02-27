@@ -1,0 +1,40 @@
+# ─── Python / Django ───
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.cache/
+.mypy_cache/
+.pytest_cache/
+
+# Environnement virtuel
+venv/
+env/
+.venv/
+
+# Variables d'environnement (SENSIBLE !)
+.env
+!.env.example
+
+# Django
+*.sqlite3
+staticfiles/
+media/
+
+# ─── Node / React ───
+node_modules/
+dist/
+.vite/
+*.local
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.swp
+
+# ─── OS ───
+.DS_Store
+Thumbs.db
+
+# ─── Logs ───
+*.log
