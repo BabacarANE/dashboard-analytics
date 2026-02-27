@@ -55,8 +55,7 @@ CHANNEL_LAYERS = {
 # core/settings_prod.py
 
 CORS_ALLOWED_ORIGINS = [
-    'https://dashboard-analytics-1kgzuy44u-babacaranes-projects.vercel.app',  # URL exacte de votre frontend
-    'https://dashboard-analytics.vercel.app',  # URL finale probable
+    'https://dashboard-analytics-tawny-pi.vercel.app',  # URL production Vercel
 ]
 
 CORS_ALLOW_CREDENTIALS = True
