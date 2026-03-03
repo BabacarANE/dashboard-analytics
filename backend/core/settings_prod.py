@@ -44,7 +44,11 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [REDIS_URL],
+            'hosts': [{
+                'address': REDIS_URL,
+                'ssl': True,
+                'ssl_cert_reqs': None,  # Désactive vérification certificat (Upstash)
+            }],
         },
     },
 }
@@ -55,7 +59,8 @@ CHANNEL_LAYERS = {
 # core/settings_prod.py
 
 CORS_ALLOWED_ORIGINS = [
-    'https://dashboard-analytics-tawny-pi.vercel.app',  # URL production Vercel
+    'https://dashboard-analytics-1kgzuy44u-babacaranes-projects.vercel.app',  # URL exacte de votre frontend
+    'https://dashboard-analytics.vercel.app',  # URL finale probable
 ]
 
 CORS_ALLOW_CREDENTIALS = True
