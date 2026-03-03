@@ -12,13 +12,8 @@ from decouple import config
 # PRODUCTION SETTINGS
 # ─────────────────────────────────────────────
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-# Les hôtes autorisés en production (via variable d'environnement)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
 # ─────────────────────────────────────────────
@@ -51,31 +46,26 @@ CHANNEL_LAYERS = {
 }
 
 # ─────────────────────────────────────────────
-# CORS — Frontend sur Vercel
+# CORS — Lu depuis variable d'environnement Render
 # ─────────────────────────────────────────────
-# core/settings_prod.py
-
-CORS_ALLOWED_ORIGINS = [
-    'https://dashboard-analytics-1kgzuy44u-babacaranes-projects.vercel.app',  # URL exacte de votre frontend
-    'https://dashboard-analytics.vercel.app',  # URL finale probable
-]
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='https://dashboard-analytics-tawny-pi.vercel.app'
+).split(',')
 
 CORS_ALLOW_CREDENTIALS = True
-
-# Important pour les WebSockets
-CORS_ALLOW_ALL_ORIGINS = False  # Ne pas mettre True en production
+CORS_ALLOW_ALL_ORIGINS = False
 
 # ─────────────────────────────────────────────
-# SECURITY — Recommandations pour la production
+# SECURITY
 # ─────────────────────────────────────────────
-# Force HTTPS
-SECURE_SSL_REDIRECT = True
+# Render gère déjà le HTTPS — évite les redirects qui cassent le CORS
+SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-# Sécurité des headers
-SECURE_HSTS_SECONDS = 31536000  # 1 an
+SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -83,13 +73,13 @@ SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 
 # ─────────────────────────────────────────────
-# STATIC FILES — Collecte pour production
+# STATIC FILES
 # ─────────────────────────────────────────────
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # ─────────────────────────────────────────────
-# LOGGING — Pour déboguer en production
+# LOGGING
 # ─────────────────────────────────────────────
 LOGGING = {
     'version': 1,
